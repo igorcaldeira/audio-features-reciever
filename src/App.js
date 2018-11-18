@@ -7,6 +7,11 @@ const {Meyda} = window
 
 class App extends Component {
 
+  constructor(){
+    super()
+    this.name = React.createRef()
+  }
+
   componentDidMount(){
     const levelRangeElement0 = document.getElementById("levelRange0");
     const levelRangeElement1 = document.getElementById("levelRange1");
@@ -114,7 +119,9 @@ class App extends Component {
             let fSpectralCentroid = isNaN(features['spectralCentroid']) ? 0 : features['spectralCentroid']
             let fSpectralRolloff = isNaN(features['spectralRolloff']) ? 0 : features['spectralRolloff']
 
-            let featuresArray = [fRms, fSpectralCentroid, fSpectralRolloff].concat(fChroma)
+            console.log(this.name)
+
+            let featuresArray = [this.name.value ,fRms, fSpectralCentroid, fSpectralRolloff].concat(fChroma)
 
             featuresStock.push(featuresArray)
 
@@ -188,6 +195,13 @@ class App extends Component {
 
     return (
       <div className="App">
+
+        <input type="text"
+          name="name"
+          id="name"
+          ref={(name) => { this.name = name }}
+        />
+
         <button id="record audio" onClick={() => this.recordAndPlay()}>gravar</button>
         <audio
           ref='localAudioPrincipal'
