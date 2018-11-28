@@ -5,6 +5,7 @@ const wml_credentials = new Map();
 
 const { Meyda } = window
 const buffersizevar = 2048
+const $ = window.$
 let arraysObject = []
 let shouldCollect = false
 var analyzer = {}
@@ -117,7 +118,7 @@ class App extends Component {
 
     function apiGet(url, username, password, loadCallback, errorCallback) {
       const oReq = new XMLHttpRequest();
-      const tokenHeader = "Basic " + btoa((username + ":" + password));
+      const tokenHeader = "Basic " + (Buffer.from(((username + ":" + password)), 'base64').toString()) ;
       const tokenUrl = url + "/v3/identity/token";
 
       oReq.addEventListener("load", loadCallback);
@@ -177,18 +178,58 @@ class App extends Component {
       });
   }
 
+  pegaToken = () => {
+    console.log("pega o token")
+
+    const authCredentials = {
+      'apikey': '2glQx2cgEo4WkwbpYvjcR_g61qDXqVIgR7WhGEeQRMpG',
+        'iam_apikey_description': 'Auto generated apikey during resource-key operation for Instance - crn:v1:bluemix:public:pm-20:us-south:a/a85f55113e0441639bfbd4bd38183cd3:be84ae42-2de0-4a6d-8e55-53bc175e38bc::',
+          'iam_apikey_name': 'auto-generated-apikey-dca8061f-965d-4caf-8d4b-0526bb505df1',
+            'iam_role_crn': 'crn:v1:bluemix:public:iam::::serviceRole:Manager',
+              'iam_serviceid_crn': 'crn:v1:bluemix:public:iam-identity::a/a85f55113e0441639bfbd4bd38183cd3::serviceid:ServiceId-1cfe245f-06b3-48bd-b20a-c3851d6d26d1',
+                'instance_id': 'be84ae42-2de0-4a6d-8e55-53bc175e38bc',
+                  'password': 'cf2d876b-aaf5-4054-8440-e09585d0ac35',
+                    'url': 'https://us-south.ml.cloud.ibm.com',
+                      'username': 'dca8061f-965d-4caf-8d4b-0526bb505df1'
+    }
+
+    const wml_service_credentials_url = authCredentials['url']
+    const wml_service_credentials_username = authCredentials['username']
+    const wml_service_credentials_password = authCredentials['password']
+
+    $.ajax({
+      type: 'GET',
+      url: wml_service_credentials_url+'/v3/identity/token',
+      headers: {
+          "user": wml_service_credentials_username+":"+wml_service_credentials_password
+      }
+      //OR
+      //beforeSend: function(xhr) { 
+      //  xhr.setRequestHeader("My-First-Header", "first value"); 
+      //  xhr.setRequestHeader("My-Second-Header", "second value"); 
+      //}
+  }).done(function(data) { 
+      alert(data);
+  });
+
+  }
+
   render() {
     return (
       <div className="App">
-        <input id="textbox_name" type="text" required />
-        <button id="record audio" onClick={() => this.recordAndPlay()}>gravar</button>
+        <input id="textbox_name" type="text" placeholder="Nome do locutor" required />
+        <br />
+        <button className='btn btn-light m-2' id="record audio" onClick={() => this.recordAndPlay()}>gravar</button>
         <hr />
         <br />
         <div>
           <a id="downloadAnchorElem" style={{ float: 'left' }} >baixar audio após gravado</a>
         </div>
+        <br />
+        <br />
         <hr />
-        <button id="reach watson" onClick={() => this.reachWatson()}>watson testing</button>
+        <button className='btn btn-light m-2' id="reach watson" onClick={() => this.reachWatson()}>watson testing</button>
+        <button className='btn btn-light m-2' id="pegatoken" onClick={() => this.pegaToken()}>pega token</button>
       </div>
     )
   }
